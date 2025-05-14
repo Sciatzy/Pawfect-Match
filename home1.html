@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adoption Process - POWFECT MATCH</title>
+    <style>
+        /* Reusing your existing styles */
+        :root {
+            --primary: #4a4a4a;
+            --secondary: #f8f8f8;
+            --accent: #ff6b6b;
+            --text: #333;
+            --light-text: #777;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: white;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        
+        /* Process Timeline */
+        .process-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .process-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .process-header p {
+            color: var(--light-text);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            background-color: var(--accent);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -1px;
+        }
+        
+        .timeline-item {
+            padding: 20px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+        }
+        
+        .timeline-item:nth-child(odd) {
+            left: 0;
+        }
+        
+        .timeline-item:nth-child(even) {
+            left: 50%;
+        }
+        
+        .timeline-content {
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        
+        .timeline-content h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content {
+            text-align: right;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            top: 40px;
+            z-index: 1;
+        }
+        
+        .timeline-item:nth-child(odd)::after {
+            right: -10px;
+        }
+        
+        .timeline-item:nth-child(even)::after {
+            left: -10px;
+        }
+        
+        /* FAQ Section */
+        .faq-section {
+            margin-top: 4rem;
+            background-color: var(--secondary);
+            padding: 3rem 0;
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 1.5rem;
+        }
+        
+        .faq-question {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            color: var(--light-text);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .faq-answer.active {
+            max-height: 200px;
+        }
+        
+        /* CTA */
+        .process-cta {
+            text-align: center;
+            margin-top: 3rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 31px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            
+            .timeline-item:nth-child(even) {
+                left: 0;
+            }
+            
+            .timeline-item:nth-child(odd) .timeline-content {
+                text-align: left;
+            }
+            
+            .timeline-item::after {
+                left: 21px;
+            }
+            
+            .timeline-item:nth-child(odd)::after,
+            .timeline-item:nth-child(even)::after {
+                left: 21px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header (same as homepage) -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">POWFECT MATCH</div>
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="adopt.html">Adopt</a>
+                    <a href="process.html" class="active">Process</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="container">
+            <div class="process-header">
+                <h1>Our Adoption Process</h1>
+                <p>We've designed our process to ensure the best matches between pets and their new families. Here's what to expect:</p>
+            </div>
+            
+            <div class="timeline">
+                <!-- Step 1 -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>Browse Available Pets</h3>
+                        <p>View our gallery of adoptable animals and read their profiles to find potential matches for your lifestyle.</p>
+                    </div>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>Submit Application</h3>
+                        <p>Complete our online adoption form with information about your home, experience, and what you're looking for in a pet.</p>
+                    </div>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>Application Review</h3>
+                        <p>Our team will review your application within 2-3 business days and contact you to discuss next steps.</p>
+                    </div>
+                </div>
+                
+                <!-- Step 4 -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>Meet & Greet</h3>
+                        <p>If your application is approved, we'll schedule a time for you to meet the pet at our facility or a foster home.</p>
+                    </div>
+                </div>
+                
+                <!-- Step 5 -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>Home Visit</h3>
+                        <p>For some adoptions, we conduct a brief home visit to ensure your environment is suitable for the pet.</p>
+                    </div>
+                </div>
+                
+                <!-- Step 6 -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>Final Approval</h3>
+                        <p>Once approved, we'll finalize the paperwork and schedule your adoption day!</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="process-cta">
+                <a href="adopt.html" class="btn">Browse Available Pets</a>
+            </div>
+        </section>
+        
+        <section class="faq-section">
+            <div class="container faq-container">
+                <h2 style="text-align: center; margin-bottom: 2rem;">Adoption FAQs</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What are your adoption fees?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Our adoption fees range from $50-$300 depending on the animal's age, species, and any special medical care they've received. All pets are spayed/neutered, vaccinated, and microchipped before adoption.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How long does the process take?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>The entire process typically takes 1-2 weeks from application to adoption. Some cases may move faster if all requirements are met quickly.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can I adopt if I rent my home?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! We just require written approval from your landlord and may verify pet policies for your rental property.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What if the adoption doesn't work out?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We offer a 14-day trial period. If for any reason the adoption isn't working, we'll take the pet back and refund your fee (minus a $25 processing charge).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer (same as homepage) -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="about.html">About Us</a>
+                <a href="process.html">Adoption Process</a>
+                <a href="resources.html">Resources</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <p class="copyright">© 2023 POWFECT MATCH. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // FAQ toggle functionality
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                answer.classList.toggle('active');
+                
+                // Toggle plus/minus icon
+                const icon = question.querySelector('span:last-child');
+                icon.textContent = icon.textContent === '+' ? '−' : '+';
+            });
+        });
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
