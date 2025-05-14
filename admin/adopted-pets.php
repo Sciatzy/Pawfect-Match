@@ -325,7 +325,7 @@ $adopted_pets = $pdo->query($query)->fetchAll();
                                         <span class="detail-value"><?= nl2br(htmlspecialchars($pet['comments'])) ?></span>
                                     </div>
                                     <div class="detail-item" style="grid-column: 1 / -1;">
-                                        <span class="detail-label">Previous Experience</span>
+                                        <span class="detail-label">Experience</span>
                                         <span class="detail-value"><?= nl2br(htmlspecialchars($pet['pet_experience'])) ?></span>
                                     </div>
                                 </div>
