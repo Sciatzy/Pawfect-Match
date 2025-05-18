@@ -13,6 +13,43 @@ require '../includes/db.php'
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Post a Pet - Pawfect Match</title>
     <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .header {
+            background-color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header a {
+            color: black    ;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-logo {
+            height: 30px;
+            width: auto;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
         /* Same styles as before, just simplified form groups */
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: 600; }
@@ -23,7 +60,7 @@ require '../includes/db.php'
             border-radius: 5px; 
         }
         .submit-btn {
-            background: #ff6b6b;
+            background: #ee7721;
             color: white;
             padding: 12px 25px;
             border: none;
@@ -33,6 +70,13 @@ require '../includes/db.php'
     </style>
 </head>
 <body>
+    <div class="header">
+        <a href="pet-list.php">← Back to List</a>
+        <a href="../login/index.php">
+            <img src="../images/logo.png" alt="Pawfect Match Logo" class="header-logo">
+            Pawfect Match
+        </a>
+    </div>
     <div class="container">
         <h1>Post a Pet</h1>
         <form action="process-pet.php" method="POST" enctype="multipart/form-data">

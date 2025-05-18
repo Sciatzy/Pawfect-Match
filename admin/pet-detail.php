@@ -37,7 +37,7 @@ if (!$pet) {
         }
         
         .header {
-            background-color: #333;
+            background-color: white;
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
@@ -45,10 +45,11 @@ if (!$pet) {
         }
         
         .header a {
-            color: white;
+            color: black;
             text-decoration: none;
             display: flex;
             align-items: center;
+            gap: 10px;
         }
         
         .header a:hover {
@@ -62,6 +63,7 @@ if (!$pet) {
         
         .header-logo {
             height: 30px;
+            width: auto;
         }
         
         .pet-container {
@@ -190,23 +192,6 @@ if (!$pet) {
             z-index: 0;
         }
         
-        .apply-button {
-            background-color: #333;
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: auto;
-            align-self: flex-start;
-            z-index: 1;
-        }
-        
-        .apply-button:hover {
-            background-color: #555;
-        }
         
         .pet-additional-info {
             display: flex;
@@ -263,8 +248,14 @@ if (!$pet) {
 </head>
 <body>
     <div class="header">
-        <a href="pet-list.php"><span class="back-arrow">←</span> Back to Pets</a>
-        <img src="../images/logo.png" alt="Pawfect Match" class="header-logo">
+        <a href="pet-list.php">
+            <span class="back-arrow">←</span>
+            Back to List
+        </a>
+        <a href="../login/index.php">
+            <img src="../images/logo.png" alt="Pawfect Match Logo" class="header-logo">
+            Pawfect Match
+        </a>
     </div>
     
     <div class="pet-container">
@@ -290,7 +281,7 @@ if (!$pet) {
                 </div>
                 
                 <p class="pet-description">
-                    <?= htmlspecialchars($pet['name']) ?> is neutered and full of charm—always ready with a wagging tail and a playful nudge.
+                    <?= htmlspecialchars($pet['name']) ?>
                 </p>
                 
                 <p class="pet-description">
@@ -303,7 +294,6 @@ if (!$pet) {
                 
                 <h2 class="pet-name"><?= htmlspecialchars($pet['name']) ?></h2>
                 
-                <button type="button" class="apply-button">Apply to Adopt</button>
                 
                 <div class="adopt-me">
                     <br>

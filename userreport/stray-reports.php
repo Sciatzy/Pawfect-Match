@@ -1,13 +1,43 @@
 <?php
-require '../includes/db.php';
+require_once '../includes/db.php';
+require '../vendor/autoload.php';
+
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
+
 session_start();
 
-$strays = $pdo->query("SELECT * FROM strays ORDER BY urgency DESC, created_at DESC")->fetchAll();
+// Check for JWT token
+$isLoggedIn = false;
+$user_id = null;
+
+if (isset($_COOKIE['token'])) {
+    try {
+        $secret_key = $_ENV['JWT_SECRET'];
+        $token = $_COOKIE['token'];
+        $decoded = JWT::decode($token, keyOrKeyArray: new Key($secret_key, 'HS256'));
+        $isLoggedIn = true;
+        $user_id = $decoded->data->user_id;
+    } catch (Exception $e) {
+        // Token is invalid
+        $isLoggedIn = false;
+    }
+}
+
+$strays = $pdo->query("SELECT * FROM strays WHERE rescued_date IS NULL ORDER BY urgency DESC, created_at DESC")->fetchAll();
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stray Animal Reports - Pawfect Match</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 <style>
         :root {
             --urgent: #ff6b6b;
@@ -16,23 +46,117 @@ $strays = $pdo->query("SELECT * FROM strays ORDER BY urgency DESC, created_at DE
             --low: #1dd1a1;
         }
         
+        html {
+            height: 100%;
+        }
+        
         body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
             background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
         }
         
-        header {
+        /* Header styles */
+        .site-header {
+            background-color: #fff;
+            display: flex;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+        
+        .site-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff914d;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .site-logo img {
+            height: 40px;
+            width: auto;
+        }
+        
+        .nav-menu .nav-link {
+            color: #444;
+            font-weight: 600;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-menu .nav-link:hover,
+        .nav-menu .nav-link.active {
+            color: #ff914d;
+        }
+        
+        .auth-btn {
+            margin-left: 10px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .login-btn {
+            background-color: transparent;
+            border: 1px solid #333;
+            color: #333;
+        }
+        
+        .login-btn:hover {
+            background-color: #333;
+            color: white;
+        }
+        
+        .signup-btn {
+            background-color: #ff914d;
+            color: #fff;
+            border: 1px solid #ff914d;
+        }
+        
+        .signup-btn:hover {
+            background-color: #e87e3c;
+        }
+        
+        .main-content {
+            flex: 1 0 auto;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .auth-buttons {
+                margin-top: 15px;
+                display: flex;
+                justify-content: start;
+        }
+        
+            .auth-btn {
+                margin: 5px;
+            }
+        }
+        
+        /* Remove redundant header styles */
+        .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #eee;
+            margin-bottom: 20px;
         }
         
         h1 {
@@ -60,6 +184,7 @@ $strays = $pdo->query("SELECT * FROM strays ORDER BY urgency DESC, created_at DE
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 25px;
+            margin-bottom: 40px;
         }
         
         .stray-card {
@@ -94,7 +219,7 @@ $strays = $pdo->query("SELECT * FROM strays ORDER BY urgency DESC, created_at DE
         
         .stray-image {
             width: 100%;
-            height: 250px;
+            height: 400px;
             object-fit: cover;
         }
         
@@ -154,18 +279,95 @@ $strays = $pdo->query("SELECT * FROM strays ORDER BY urgency DESC, created_at DE
             color: #666;
             grid-column: 1 / -1;
         }
+        
+        /* Footer styles */
+        .site-footer {
+            background: #fff5ed;
+            padding: 30px 0;
+            width: 100%;
+            flex-shrink: 0;
+        }
+        
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff914d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-logo img {
+            height: 30px;
+            width: auto;
+        }
+        
+        .social-icon {
+            margin-left: 10px;
+            color: #ff914d;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            color: #e87e3c;
+        }
+
+        .menu-item.active {
+            background-color: #f5f5f5; /* lighter highlight */
+            color: #ee7721;
+        }
     </style>
 </head>
 <body>
-    <header>
-        
-        <h1>Stray Animal Alerts</h1>
-        <?php if (isset($_SESSION['ID'])): ?>
-            <a href="report-stray.php" class="report-btn">Report a Stray</a>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light py-3">
+                <a href="../login/index.php" class="site-logo navbar-brand">
+                    <img src="../images/logo.png" alt="Pawfect Match Logo">
+                    Pawfect Match
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto nav-menu">
+                        <li class="nav-item"><a class="nav-link" href="../login/index.php">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../adopt/pet-list.php">Adopt</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="stray-reports.php">Stray Reports</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                    </ul>
+                    <?php if(!isset($_COOKIE['token'])): ?>
+                    <div class="auth-buttons">
+                        <a href="../login/login.php" class="auth-btn login-btn">Login</a>
+                        <a href="../login/login.php" class="auth-btn signup-btn">Sign Up</a>
+                    </div>
         <?php else: ?>
-            <a href="login/login-report.php" class="report-btn">Login to Report</a>
-        <?php endif; ?>
+                    <div class="auth-buttons">
+                        <a href="../login/logout.php" class="auth-btn login-btn">Logout</a>
+                        <a href="report-stray.php" class="auth-btn signup-btn">Report a Stray</a>
+                    </div>
+                    <?php endif;?>
+                </div>
+            </nav>
+        </div>
     </header>
+
+    <!-- Page Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Stray Animal Reports</h1>
+            <?php if($isLoggedIn): ?>
+                <a href="report-stray.php" class="report-btn">
+                    <i class="fas fa-plus"></i> Report a Stray
+                </a>
+            <?php else: ?>
+                <a href="../login/login-report.php" class="report-btn">
+                    <i class="fas fa-sign-in-alt"></i> Login to Report
+                </a>
+            <?php endif; ?>
+        </div>
     
     <div class="stray-list">
         <?php if (empty($strays)): ?>
@@ -204,13 +406,49 @@ $strays = $pdo->query("SELECT * FROM strays ORDER BY urgency DESC, created_at DE
                             <?= nl2br(htmlspecialchars($stray['description'])) ?>
                         </p>
                         
-                        <a href="contact.php?stray_id=<?= $stray['stray_id'] ?>" class="contact-btn">
-                            Help This Animal
-                        </a>
+                        <?php $status = $stray['report_status'] ?? 'pending'; ?>
+                        <?php if ($status !== 'resolved'): ?>
+                            <form action="process-rescue.php" method="POST" style="display: inline;">
+                                <input type="hidden" name="report_id" value="<?= $stray['stray_id'] ?>">
+                                <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to mark this stray as rescued?')">
+                                    <i class="fas fa-check-circle"></i> Mark as Rescued
+                                </button>
+                            </form>
+                        <?php else: ?>
+                            <div class="alert alert-success text-center" style="background: #e6f9ec; color: #388e3c; border-radius: 5px; padding: 8px 0; font-weight: bold;">Already Rescued</div>
+                        <?php endif; ?>
+                        
                     </div>
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="footer-logo">
+                        <img src="../images/logo.png" alt="Pawfect Match Logo">
+                        Pawfect Match
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0 text-center">
+                    <p class="mb-0">Copyright © 2025 Bukidnon Aspin Refuge Kennel - BARK. All Rights Reserved.</p>
+                </div>
+                <div class="col-md-4 text-md-end text-center">
+                    <div class="social-icons">
+                        <a href="https://www.facebook.com/bukidnonaspinrefugekennel" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

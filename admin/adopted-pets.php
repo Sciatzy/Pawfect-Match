@@ -1,16 +1,41 @@
 <?php
-require '../includes/db.php';
 session_start();
+require '../includes/db.php';
 
 // Get all adopted pets with adopter details
-$query = "SELECT a.*, p.name as pet_name, p.image_path, p.gender, p.age, p.weight, p.description,
-          u.*
-          FROM adopters a 
-          INNER JOIN pets p ON a.pet_id = p.pets_id 
-          INNER JOIN users u ON a.user_id = u.ID 
-          WHERE a.status = 'approved' 
-          ORDER BY a.application_date DESC";
+$query = "
+SELECT 
+    ad.adoption_id,
+    ad.adoption_date,
+    ad.app_status,
+    a.adopter_id,
+    a.housing_type,
+    a.yard_size,
+    a.pet_experience,
+    a.hours_alone,
+    a.comments,
+    p.pets_id,
+    p.name as pet_name,
+    p.image_path,
+    p.gender,
+    p.age,
+    p.weight,
+    p.description,
+    u.firstname,
+    u.lastname,
+    u.email,
+    a.phone,
+    a.address
+FROM adoptions ad
+INNER JOIN adopters a ON ad.adopter_id = a.adopter_id
+INNER JOIN pets p ON ad.pet_id = p.pets_id
+INNER JOIN users u ON a.user_id = u.ID
+WHERE ad.app_status = 'approved'
+ORDER BY ad.adoption_date DESC
+";
 $adopted_pets = $pdo->query($query)->fetchAll();
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,11 +43,118 @@ $adopted_pets = $pdo->query($query)->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pawfect Match - Adopted Pets</title>
+    <title>Adopted Pets - Pawfect Match</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="pet-list.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f9f9f9;
+        }
+
+        .sidebar {
+            width: 320px;
+            background-color: white;
+            padding: 20px;
+            border-right: 1px solid #e1e1e1;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            color: #ee7721;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .paw-icon {
+            color: #ee7721;
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 5px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #333;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .menu-item.active {
+            background-color: #fff2ea;
+            color: #ee7721;
+        }
+
+        .menu-item:hover:not(.active) {
+            background-color: #f5f5f5;
+        }
+
+        .menu-icon {
+            margin-right: 15px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .logout {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            color: #333;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .logout:hover {
+            color: #ee7721;
+        }
+
+        .logout-icon {
+            margin-right: 15px;
+        }
+
+        .site-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff914d;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .site-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .main-content {
+            margin-left: 320px;
+            padding: 40px;
+            min-height: 100vh;
+            width: calc(100% - 320px);
+        }
+
         .adoption-list {
             background: white;
             border-radius: 15px;
@@ -196,49 +328,22 @@ $adopted_pets = $pdo->query($query)->fetchAll();
 <body>
     <div class="sidebar">
         <div class="logo">
-            <span class="paw-icon">🐾</span>
+            <a href="../login/index.php" class="site-logo navbar-brand">
+                <img src="../images/logo.png" alt="Pawfect Match Logo">
             Pawfect Match
+            </a>
         </div>
-
-        <a href="dashboard.php">
-            <div class="menu-item">
-                <span class="menu-icon">👤</span>
-                Dashboard
-            </div>
-        </a>
-
-        <a href="pet-list.php">
-            <div class="menu-item">
-                <span class="menu-icon">🐶</span>
-                Pets Listed
-            </div>
-        </a>
-
-        <a href="adopted-pets.php">
-            <div class="menu-item active">
-                <span class="menu-icon">🏠</span>
-                Adopted Pets
-            </div>
-        </a>
-
-        <a href="pending-adoptions.php">
-            <div class="menu-item">
-                <span class="menu-icon">📋</span>
-                Pending Adoptions
-            </div>
-        </a>
-
-        <div class="menu-item">
-            <span class="menu-icon">💰</span>
-            Donations Received
-        </div>
-
-        <a href="../login/logout.php" class="logout">
-            <span class="logout-icon">↩️</span>
-            Logout
-        </a>
+        
+        <a href="dashboard.php" class="menu-item"><i class="fas fa-user menu-icon"></i>Dashboard</a>
+        <a href="pet-list.php" class="menu-item"><i class="fas fa-dog menu-icon"></i>Pets Listed</a>
+        <a href="adopted-pets.php" class="menu-item active  "><i class="fas fa-home menu-icon"></i>Adopted Pets</a>
+        <a href="pending-adoptions.php" class="menu-item"><i class="fas fa-clipboard-list menu-icon"></i>Pending Adoptions</a>
+        <a href="stray-reports.php" class="menu-item"><i class="fas fa-exclamation-triangle menu-icon"></i>Stray Reports</a>
+        <a href="strays-rescued.php" class="menu-item"><i class="fas fa-check-square menu-icon"></i>Rescued Strays</a>
+        
+        <a href="../login/logout.php" class="logout"><i class="fas fa-sign-out-alt logout-icon"></i>Logout</a>
     </div>
-
+    
     <div class="main-content">
         <div class="adoption-list">
             <div class="adoption-header">
@@ -292,7 +397,7 @@ $adopted_pets = $pdo->query($query)->fetchAll();
                                 <div class="detail-grid">
                                     <div class="detail-item">
                                         <span class="detail-label">Full Name</span>
-                                        <span class="detail-value"><?= htmlspecialchars($pet['full_name']) ?></span>
+                                        <span class="detail-value"><?= htmlspecialchars($pet['firstname'] . ' ' . $pet['lastname']) ?></span>
                                     </div>
                                     <div class="detail-item">
                                         <span class="detail-label">Email</span>
@@ -318,7 +423,7 @@ $adopted_pets = $pdo->query($query)->fetchAll();
                                     </div>
                                     <div class="detail-item">
                                         <span class="detail-label">Adoption Date</span>
-                                        <span class="detail-value"><?= date('M d, Y h:i A', strtotime($pet['application_date'])) ?></span>
+                                        <span class="detail-value"><?= date('M d, Y h:i A', strtotime($pet['adoption_date'])) ?></span>
                                     </div>
                                     <div class="detail-item" style="grid-column: 1 / -1;">
                                         <span class="detail-label">Reason for Adoption</span>

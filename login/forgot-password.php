@@ -51,16 +51,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
       $_SESSION['email_sent'] = "true";
       $_SESSION['success'] = "Verification code has been sent to your email";
-      header("Location: login/send-code.php");
+      header("Location: send-code.php");
       exit();
     } catch (Exception $e) {
       $_SESSION['Error'] = "Message could not be sent";
-      header("Location: login/forgot-password.php");
+      header("Location: forgot-password.php");
       exit();
     }
   } else {
     $_SESSION['Error'] = "No user found with that email";
-    header("Location: login/forgot-password.php");
+    header("Location: forgot-password.php");
     exit();
   }
 }
@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       .sendcode-btn {
         width: 100%;
         padding: 12px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg,rgb(228, 116, 47) 0%, #ff914d 100%);
         color: white;
         border: none;
         border-radius: 8px;
@@ -196,8 +196,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           font-size: 20px;
         }
       }
+
+      .site-logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #ff914d;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .site-logo img {
+        height: 40px;
+        width: auto;
+      }
+
+      .footer-logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #ff914d;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .footer-logo img {
+        height: 30px;
+        width: auto;
+      }
       </style>
-      <img src="images/logo.png" alt="" />
+      <img src="../images/logo.png" alt="" />
       <h1>Forgot Password</h1>
       <p id="alert_message">Please enter your email address</p>
 

@@ -3,7 +3,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname ="draft";
+$dbname ="pawfect_match";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 

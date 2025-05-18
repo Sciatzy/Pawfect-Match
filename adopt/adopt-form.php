@@ -9,22 +9,23 @@ use Firebase\JWT\Key;
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 
-$pet_id = $_POST['pet_id'];
+// Get pet_id from either GET or POST
+$pet_id = isset($_GET['pet_id']) ? $_GET['pet_id'] : (isset($_POST['pet_id']) ? $_POST['pet_id'] : null);
 
 // Check if user is logged in
 if (!isset($_COOKIE['token'])) {
     // Save the pet_id in session for redirection after login
     if (isset($pet_id)) {
-        $_SESSION['intended_pet_id'] = $_GET['pet_id'];
+        $_SESSION['intended_pet_id'] = $pet_id;
     }
     $_SESSION['error'] = "You must be logged in to adopt a pet.";
     header('Location: ../login/login.php');
     exit();
 }
 
-// If pet_id is provided in URL, fetch pet details
+// If pet_id is provided, fetch pet details
 $pet = null;
-if (isset($pet_id)) {
+if ($pet_id) {
     try {
         $stmt = $pdo->prepare("SELECT * FROM pets WHERE pets_id = ?");
         $stmt->execute([$pet_id]);
@@ -88,6 +89,7 @@ try {
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 15px 0;
             text-align: center;
+            position: relative;
         }
         
         .header h1 {
@@ -263,10 +265,66 @@ try {
                 padding: 20px;
             }
         }
+        
+        .site-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff914d;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .site-logo img {
+            height: 40px;
+            width: auto;
+        }
+        
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff914d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-logo img {
+            height: 30px;
+            width: auto;
+        }
+        
+        .back-link {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+            color: #ff914d;
+        }
+        
+        .back-arrow {
+            font-size: 1.3rem;
+        }
     </style>
 </head>
 <body>
     <div class="header">
+        <a href="pet-list.php" class="back-link">
+            <span class="back-arrow">←</span>
+            Back to Pets
+        </a>
         <h1>Pawfect Match</h1>
     </div>
     
@@ -294,12 +352,12 @@ try {
                     
                     <div class="form-group">
                         <label for="full_name">Full Name*</label>
-                        <input type="text" id="full_name" name="full_name" required>
+                        <input type="text" id="full_name" name="full_name" value="<?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?>" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="email">Email*</label>
-                        <input type="email" id="email" name="email" required>
+                        <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
                     </div>
                     
                     <div class="form-group">

@@ -1,16 +1,30 @@
 <?php
 session_start();
-require '../includes/db.php'; // Includes your database connection
+require_once '../includes/db.php';
+require '../vendor/autoload.php';
+
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
 
 // Check if user is logged in
-if (!isset($_SESSION['ID'])) {
-    header('Location: login.php');
+if (!isset($_COOKIE['token'])) {
+    header('Location: ../login/login.php');
     exit();
 }
 
+$secret_key = $_ENV['JWT_SECRET'];
+$token = $_COOKIE['token'];
+$decoded = JWT::decode($token, keyOrKeyArray: new Key($secret_key, 'HS256'));
+
+// Get user ID from token
+$user_id = $decoded->data->user_id;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate required fields
-    $required = ['name', 'weight', 'age', 'gender', 'description'];
+    $required = ['name', 'animal_type', 'gender', 'description', 'location', 'urgency'];
     foreach ($required as $field) {
         if (empty($_POST[$field])) {
             die("Please fill all required fields");
@@ -18,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Process image upload
-    $uploadDir = '../uploads/pets/'; // Changed to use a proper relative path
+    $uploadDir = __DIR__ . '/uploads/'; // Full path to uploads directory
     if (!file_exists($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
@@ -38,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
     $filename = uniqid() . '.' . $extension;
     $targetPath = $uploadDir . $filename;
-    $webPath = '/uploads/pets/' . $filename; // Web-accessible path with leading slash
+    $webPath = 'uploads/' . $filename; // Web-accessible path
 
     if (!move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
         die("Image upload failed");
@@ -47,33 +61,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Insert into database
     try {
         $stmt = $pdo->prepare(
-            "INSERT INTO pets 
-            (user_id, name, weight, age, gender, description, image_path, size, created_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'M', NOW())"
+            "INSERT INTO strays 
+            (ID, name, animal_type, gender, age, weight, description, location, urgency, image_path, contact_info, created_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())"
         );
         
         $stmt->execute([
-            $_SESSION['ID'],
+            $user_id,
             htmlspecialchars($_POST['name']),
-            floatval($_POST['weight']),
-            intval($_POST['age']),
-            $_POST['gender'],
+            htmlspecialchars($_POST['animal_type']),
+            htmlspecialchars($_POST['gender']),
+            !empty($_POST['age']) ? intval($_POST['age']) : null,
+            !empty($_POST['weight']) ? floatval($_POST['weight']) : null,
             htmlspecialchars($_POST['description']),
-            $webPath // Use the web-accessible path
+            htmlspecialchars($_POST['location']),
+            htmlspecialchars($_POST['urgency']),
+            $webPath,
+            !empty($_POST['contact_info']) ? htmlspecialchars($_POST['contact_info']) : null
         ]);
         
-        header('Location: pet-list.php');
+        header('Location: stray-reports.php');
         exit();
     } catch (PDOException $e) {
         // If database insertion fails, delete the uploaded file
         if (file_exists($targetPath)) {
             unlink($targetPath);
         }
-        die("Error saving pet: " . $e->getMessage());
+        die("Error saving report: " . $e->getMessage());
     }
 } else {
     // If not a POST request, redirect to the form page
-    header('Location: post-pet.html');
+    header('Location: report-stray.php');
     exit();
 }
 ?>

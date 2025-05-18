@@ -57,6 +57,14 @@ $user = $stmt->fetch();
       font-weight: bold;
       color: #ff914d;
       text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .site-logo img {
+      height: 40px;
+      width: auto;
     }
     
     .nav-menu .nav-link {
@@ -112,6 +120,14 @@ $user = $stmt->fetch();
       font-size: 1.5rem;
       font-weight: bold;
       color: #ff914d;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .footer-logo img {
+      height: 30px;
+      width: auto;
     }
     
     .social-icon {
@@ -143,14 +159,18 @@ $user = $stmt->fetch();
   <header class="site-header">
     <div class="container">
       <nav class="navbar navbar-expand-lg navbar-light py-3">
-        <a href="#" class="site-logo navbar-brand">🐾 Pawfect Match</a>
+        <a href="index.php" class="site-logo navbar-brand">
+          <img src="../images/logo.png" alt="Pawfect Match Logo">
+          Pawfect Match
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto nav-menu">
-            <li class="nav-item"><a class="n  av-link active" href="#">Home</a></li>
+            <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="../adopt/pet-list.php">Adopt</a></li>
+            <li class="nav-item"><a class="nav-link" href="../userreport/stray-reports.php">Stray Reports</a></li>
             <li class="nav-item"><a class="nav-link" href="#">About</a></li>
           </ul>
           <?php if(!isset($_COOKIE['token'])): ?>
@@ -162,10 +182,12 @@ $user = $stmt->fetch();
             <div class="auth-buttons">
             <a href="../admin/dashboard.php" class="auth-btn login-btn">Admin</a>
             <a href="logout.php" class="auth-btn login-btn">Logout</a>
+            <a href="../userreport/report-stray.php" class="auth-btn signup-btn">Report a Stray</a>
           </div>
           <?php else: ?>
             <div class="auth-buttons">
             <a href="logout.php" class="auth-btn login-btn">Logout</a>
+            <a href="../userreport/report-stray.php" class="auth-btn signup-btn">Report a Stray</a>
           </div>
           <?php endif;?>
         </div>
@@ -220,7 +242,10 @@ $user = $stmt->fetch();
     <div class="container">
       <div class="row align-items-center">
         <div class="col-md-4 mb-3 mb-md-0">
-          <div class="footer-logo">🐾 Pawfect Match</div>
+          <div class="footer-logo">
+            <img src="../images/logo.png" alt="Pawfect Match Logo">
+            Pawfect Match
+          </div>
         </div>
         <div class="col-md-4 mb-3 mb-md-0 text-center">
           <p class="mb-0">Copyright © 2025 Bukidnon Aspin Refuge Kennel - BARK. All Rights Reserved.</p>

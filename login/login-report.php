@@ -208,6 +208,35 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 padding: 40px 30px;
             }
         }
+
+        .site-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff914d;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .site-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff914d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-logo img {
+            height: 30px;
+            width: auto;
+        }
     </style>
 </head>
 <body>

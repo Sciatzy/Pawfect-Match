@@ -50,7 +50,7 @@ $siteKey = $_ENV['RECAPTCHA_SITE_KEY'];
         /* Left side - Graphic */
         .graphic-side {
             flex: 1;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff914d 0%, #e87e3c 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -61,13 +61,21 @@ $siteKey = $_ENV['RECAPTCHA_SITE_KEY'];
         }
 
         .graphic-side img {
-            max-width: 80%;
+            max-width: 200px;
+            height: auto;
             margin-bottom: 30px;
+            filter: brightness(0) invert(1); /* Makes the logo white */
         }
 
         .graphic-side h2 {
             font-size: 1.8rem;
             margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .graphic-side p {
+            font-size: 1.1rem;
+            opacity: 0.9;
         }
 
         /* Right side - Form */
@@ -113,9 +121,9 @@ $siteKey = $_ENV['RECAPTCHA_SITE_KEY'];
         }
 
         .form-group input:focus {
-            border-color: #667eea;
+            border-color: #ff914d;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 0 0 3px rgba(255, 145, 77, 0.2);
         }
 
         /* Button and links */
@@ -127,7 +135,7 @@ $siteKey = $_ENV['RECAPTCHA_SITE_KEY'];
         }
 
         .login-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ff914d;
             color: white;
             border: none;
             padding: 12px 30px;
@@ -139,19 +147,20 @@ $siteKey = $_ENV['RECAPTCHA_SITE_KEY'];
         }
 
         .login-btn:hover {
+            background: #e87e3c;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(255, 145, 77, 0.4);
         }
 
         .reset-link {
-            color: #667eea;
+            color: #ff914d;
             text-decoration: none;
             font-size: 0.9rem;
             transition: color 0.2s;
         }
 
         .reset-link:hover {
-            color: #764ba2;
+            color: #e87e3c;
             text-decoration: underline;
         }
 
@@ -162,14 +171,14 @@ $siteKey = $_ENV['RECAPTCHA_SITE_KEY'];
         }
 
         .signup-link a {
-            color: #667eea;
+            color: #ff914d;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s;
         }
 
         .signup-link a:hover {
-            color: #764ba2;
+            color: #e87e3c;
             text-decoration: underline;
         }
 
@@ -187,13 +196,93 @@ $siteKey = $_ENV['RECAPTCHA_SITE_KEY'];
                 padding: 40px 30px;
             }
         }
+
+        .site-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff914d;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .site-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff914d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-logo img {
+            height: 30px;
+            width: auto;
+        }
+
+        .social-login {
+            margin-top: 20px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .divider span {
+            padding: 0 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 12px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .google-btn:hover {
+            background: #f8f9fa;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .google-btn img {
+            width: 18px;
+            height: 18px;
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
         <div class="graphic-side">
-            <!-- Replace with your logo or image -->
-            <img src="https://via.placeholder.com/300x200?text=Your+Logo" alt="Company Logo">
+            <img src="../images/logo.png" alt="Pawfect Match Logo" style="max-width: 200px; height: auto;">
             <h2>Welcome Back</h2>
             <p>Sign in to access your account</p>
         </div>
@@ -219,8 +308,8 @@ $siteKey = $_ENV['RECAPTCHA_SITE_KEY'];
             
             <form action="login_validate.php" method="POST">
                 <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="username" id="username" name="username" required>
+                    <label for="email">Email or Username</label>
+                    <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email or username" required>
                 </div>
                 
                 <div class="form-group">
@@ -237,8 +326,19 @@ $siteKey = $_ENV['RECAPTCHA_SITE_KEY'];
             <div class="signup-link">
                 <p>Don't have an account? <a href="signup.php">Signup</a></p>
             </div>
+
+            <div class="social-login">
+                <div class="divider">
+                    <span>or</span>
+                </div>
+                <a href="google-auth.php" class="google-btn">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo">
+                    Sign in with Google
+                </a>
+            </div>
         </div>
     </div>
+
     <script src="https://www.google.com/recaptcha/api.js"></script>
 </body>
 </html>

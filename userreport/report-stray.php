@@ -1,11 +1,34 @@
 <?php
 session_start();
-require '../includes/db.php';
+require_once '../includes/db.php';
+require '../vendor/autoload.php';
 
-// Redirect if not logged in
-if (!isset($_SESSION['ID'])) {
-    header('Location: login.php');
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
+
+// Check if user is logged in
+if (!isset($_COOKIE['token'])) {
+    $_SESSION['redirect_after_login'] = '/draft/userreport/report-stray.php';
+    header('Location: ../login/login.php');
     exit();
+}
+
+$secret_key = $_ENV['JWT_SECRET'];
+$token = $_COOKIE['token'];
+$decoded = JWT::decode($token, keyOrKeyArray: new Key($secret_key, 'HS256'));
+
+// Get user information
+$user_id = $decoded->data->user_id;
+$user = null;
+try {
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    // Silently ignore errors
 }
 ?>
 
@@ -142,7 +165,7 @@ if (!isset($_SESSION['ID'])) {
     <h1>Report a Stray Animal in Need</h1>
     
     <form class="report-form" action="process-stray.php" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="ID" value="<?= $_SESSION['ID'] ?>">
+        <input type="hidden" name="ID" value="<?= $user_id ?>">
         
         <!-- Animal Information -->
         <div class="form-group">

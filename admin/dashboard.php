@@ -1,9 +1,36 @@
+<?php
+session_start();
+require '../includes/db.php';
+
+// Get total pets count
+$stmt = $pdo->query("SELECT COUNT(*) FROM pets");
+$totalPets = $stmt->fetchColumn();
+
+// Get adopted pets count
+$stmt = $pdo->query("SELECT COUNT(*) FROM adopters WHERE status = 'approved'");
+$adoptedPets = $stmt->fetchColumn();
+
+// Get stray reports count
+$stmt = $pdo->query("SELECT COUNT(*) FROM strays");
+$strayReports = $stmt->fetchColumn();
+
+// Get rescued strays count
+$stmt = $pdo->query("SELECT COUNT(*) FROM strays WHERE status = 'rescued'");
+$rescuedStrays = $stmt->fetchColumn();
+
+// Get all users
+$users = $pdo->query("SELECT firstname, lastname, email, role FROM users ORDER BY ID DESC")->fetchAll();
+
+$current_page = basename($_SERVER['PHP_SELF']);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pawfect Match - Pet Adoption Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -25,6 +52,9 @@
             border-right: 1px solid #e1e1e1;
             display: flex;
             flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
         }
         
         .logo {
@@ -51,6 +81,7 @@
             cursor: pointer;
             color: #333;
             font-weight: 500;
+            text-decoration: none;
         }
         
         .menu-item.active {
@@ -68,9 +99,38 @@
             text-align: center;
         }
         
-        .main-content {
-            flex: 1;
-            padding: 40px;
+        .logout {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            color: #333;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .logout:hover {
+            color: #ee7721;
+        }
+
+        .logout-icon {
+            margin-right: 15px;
+        }
+
+        .site-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff914d;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .site-logo img {
+            height: 40px;
+            width: auto;
         }
         
         .header {
@@ -89,11 +149,20 @@
         .user-info {
             display: flex;
             align-items: center;
+            gap: 10px;
+            background: #fff2ea;
+            padding: 8px 15px;
+            border-radius: 20px;
         }
         
         .user-name {
-            margin-right: 15px;
             font-weight: 500;
+            color: #333;
+        }
+        
+        .user-icon {
+            color: #ff914d;
+            font-size: 1.2rem;
         }
         
         .user-avatar {
@@ -107,12 +176,14 @@
             display: flex;
             gap: 20px;
             margin-bottom: 40px;
+            width: 100%;
         }
         
         .stat-card {
             flex: 1;
             padding: 25px;
             border-radius: 12px;
+            min-width: 0;
         }
         
         .stat-title {
@@ -139,20 +210,28 @@
             background-color: #ffe6e6;
         }
         
-        .action-button {
-            background-color: #ee7721;
+        .generate-report-btn {
+            background-color: #ff914d;
             color: white;
             border: none;
             border-radius: 8px;
-            padding: 15px 30px;
+            padding: 12px 30px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 500;
             cursor: pointer;
-            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+            text-decoration: none;
         }
         
-        .action-button:hover {
-            background-color: #e06612;
+        .generate-report-btn:hover {
+            background-color: #e67e3d;
+        }
+        
+        .generate-report-btn i {
+            font-size: 20px;
         }
         
         .report-section {
@@ -173,103 +252,116 @@
             height: 300px;
         }
         
-        .logout {
-            margin-top: auto;
+        .main-content {
+            margin-left: 320px;
+            padding: 40px;
+            min-height: 100vh;
+            width: calc(100% - 320px);
+        }
+
+        .back-home {
             display: flex;
             align-items: center;
-            padding: 15px;
-            color: #333;
-            cursor: pointer;
+            gap: 8px;
+            background: #ff914d;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
             font-weight: 500;
+            transition: background-color 0.3s;
         }
         
-        .logout:hover {
-            color: #ee7721;
-        }
-        
-        .logout-icon {
-            margin-right: 15px;
+        .back-home:hover {
+            background: #e67e3d;
         }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <div class="logo">
-            <span class="paw-icon">🐾</span>
+            <a href="../login/index.php" class="site-logo navbar-brand">
+                <img src="../images/logo.png" alt="Pawfect Match Logo">
             Pawfect Match
+            </a>
         </div>
         
-        <a href="dashboard.php">
-            <div class="menu-item active">
-                <span class="menu-icon">👤</span>
-                Dashboard
-            </div>
-        </a>
+        <a href="dashboard.php" class="menu-item<?= $current_page == 'dashboard.php' ? ' active' : '' ?>"><i class="fas fa-user menu-icon"></i>Dashboard</a>
+        <a href="pet-list.php" class="menu-item<?= $current_page == 'pet-list.php' ? ' active' : '' ?>"><i class="fas fa-dog menu-icon"></i>Pets Listed</a>
+        <a href="adopted-pets.php" class="menu-item<?= $current_page == 'adopted-pets.php' ? ' active' : '' ?>"><i class="fas fa-home menu-icon"></i>Adopted Pets</a>
+        <a href="pending-adoptions.php" class="menu-item<?= $current_page == 'pending-adoptions.php' ? ' active' : '' ?>"><i class="fas fa-clipboard-list menu-icon"></i>Pending Adoptions</a>
+        <a href="stray-reports.php" class="menu-item<?= $current_page == 'stray-reports.php' ? ' active' : '' ?>"><i class="fas fa-exclamation-triangle menu-icon"></i>Stray Reports</a>
+        <a href="strays-rescued.php" class="menu-item<?= $current_page == 'strays-rescued.php' ? ' active' : '' ?>"><i class="fas fa-check-square menu-icon"></i>Rescued Strays</a>
         
-        <a href="pet-list.php">
-            <div class="menu-item">
-                <span class="menu-icon">🐶</span>
-                Pets Listed
-            </div>
-        </a>
-        
-        <a href="adopted-pets.php">
-            <div class="menu-item">
-                <span class="menu-icon">🏠</span>
-                Adopted Pets
-            </div>
-        </a>
-        
-        <a href="pending-adoptions.php">
-            <div class="menu-item">
-                <span class="menu-icon">📋</span>
-                Pending Adoptions
-            </div>
-        </a>
-        
-        <div class="menu-item">
-            <span class="menu-icon">💰</span>
-            Donations Received
-        </div>
-        
-        <div class="logout">
-            <span class="logout-icon">↩️</span>
-            Logout
-        </div>
+        <a href="../login/logout.php" class="logout"><i class="fas fa-sign-out-alt logout-icon"></i>Logout</a>
     </div>
     
     <div class="main-content">
         <div class="header">
             <div class="welcome">Welcome Back!</div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                
+                <a href="../login/index.php" class="back-home">
+                    <i class="fas fa-home"></i>
+                    Back to Home
+                </a>
             <div class="user-info">
-                <div class="user-name">Waffieta Buena-Obra</div>
-                <img class="user-avatar" src="/api/placeholder/45/45" alt="User Avatar">
+                    <i class="fas fa-user-circle user-icon"></i>
+                    <div class="user-name">Admin</div>
+                </div>
             </div>
         </div>
         
         <div class="stats-container">
             <div class="stat-card card-sales">
-                <div class="stat-title">Total Donations</div>
-                <div class="stat-value">₱57,580</div>
+                <div class="stat-title">Total Pets</div>
+                <div class="stat-value"><?php echo $totalPets; ?></div>
             </div>
             
             <div class="stat-card card-orders">
-                <div class="stat-title">Total Adoptions</div>
-                <div class="stat-value">120</div>
+                <div class="stat-title">Adopted Pets</div>
+                <div class="stat-value"><?php echo $adoptedPets; ?></div>
             </div>
             
             <div class="stat-card card-customers">
-                <div class="stat-title">Total Rescues</div>
-                <div class="stat-value">85</div>
+                <div class="stat-title">Stray Reports</div>
+                <div class="stat-value"><?php echo $strayReports; ?></div>
+            </div>
+
+            <div class="stat-card" style="background-color: #e6ffe6;">
+                <div class="stat-title">Rescued Strays</div>
+                <div class="stat-value"><?php echo $rescuedStrays; ?></div>
             </div>
         </div>
         
-        <button class="action-button">View Reports</button>
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 40px;">
+            <a href="generate-report.php" class="generate-report-btn" style="width: auto; min-width: 200px; text-align: center; padding: 12px 30px; display: inline-flex; align-items: center; justify-content: center; gap: 10px;">
+                <i class="fas fa-file-pdf"></i>
+                Generate Report
+            </a>
+        </div>
         
         <div class="report-section">
-            <div class="report-title">Donation Report</div>
-            <div class="chart-container">
-                <canvas id="salesChart"></canvas>
+            <div class="report-title">Registered Users</div>
+            <div class="chart-container" style="padding:0; background:none; box-shadow:none;">
+                <table style="width:100%; border-collapse:collapse; background:white; border-radius:10px; overflow:hidden;">
+                    <thead style="background:#fff2ea;">
+                        <tr>
+                            <th style="padding:12px; text-align:left;">Name</th>
+                            <th style="padding:12px; text-align:left;">Email</th>
+                            <th style="padding:12px; text-align:left;">Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($users as $user): ?>
+                        <tr style="border-bottom:1px solid #f0f0f0;">
+                            <td style="padding:12px;"><?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?></td>
+                            <td style="padding:12px;"><?= htmlspecialchars($user['email']) ?></td>
+                            <td style="padding:12px; text-transform:capitalize;"><?= htmlspecialchars($user['role']) ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -323,21 +415,6 @@
                         }
                     }
                 }
-            });
-            
-            // Add click event listeners to menu items
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    menuItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-            
-            // Add click event listener to the action button
-            const actionButton = document.querySelector('.action-button');
-            actionButton.addEventListener('click', function() {
-                alert('Redirecting to detailed reports...');
             });
         });
     </script>

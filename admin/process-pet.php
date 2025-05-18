@@ -36,12 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $stmt = $pdo->prepare(
             "INSERT INTO pets
-            (pets_id, name, weight, age, gender, description, image_path)
-            VALUES (?, ?, ?, ?, ?, ?, ?)"
+            (name, weight, age, gender, description, image_path)
+            VALUES (?, ?, ?, ?, ?, ?)"
         );
        
         $stmt->execute([
-            $_SESSION['ID'],
             htmlspecialchars($_POST['name']),
             floatval($_POST['weight']),
             intval($_POST['age']),
