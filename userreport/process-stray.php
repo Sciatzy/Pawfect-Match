@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $stmt = $pdo->prepare(
             "INSERT INTO strays 
-            (ID, name, animal_type, gender, age, weight, description, location, urgency, image_path, contact_info, created_at) 
+            (reporter_id, name, animal_type, gender, age, weight, description, location, urgency, image_path, contact_info, created_at) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())"
         );
         

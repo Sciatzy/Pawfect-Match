@@ -2,5 +2,5 @@
 
 setcookie("token", "", time() - 3600, "/", "", true, true);
 
-header("Location: ../pawfect/login/index.php");
+header("Location: login/index.php");
 exit();

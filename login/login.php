@@ -8,6 +8,11 @@ $doteenv->load();
 
 $siteKey = $_ENV['RECAPTCHA_SITE_KEY'];
 
+// Clear form data if this is a fresh page load (not a redirect after error)
+if (!isset($_SESSION['error'])) {
+    unset($_SESSION['form_data']);
+}
+
 ?>
 
 

@@ -1,3 +1,5 @@
+
+cinnamon🐰
 <?php
   session_start();
 
@@ -42,11 +44,19 @@
     $email = $_POST['email'];
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
-    $code = $_POST['code'];
-    if($newPassword === $confirmPassword){
-      $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+    
+    // Validate the new password
+    $validation_result = validatePassword($new_password);
+    if($validation_result !== true) {
+      $_SESSION['error'] = $validation_result;
+      header("Location: new-password.php");
+      exit();
+    }
 
-      $stmt = $pdo->prepare("UPDATE users SET PASSWORD = ? WHERE email = ?");
+    if($new_password === $confirm_password){
+      $hashedPassword = password_hash($new_password, PASSWORD_BCRYPT);
+
+      $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE email = ?");
       $stmt->execute([$hashedPassword, $_SESSION['reset_email']]);
 
       unset($_SESSION['reset_email']);
@@ -263,7 +273,7 @@
       const confirmPassword = document.getElementById('confirm_password').value;
       
       // Check length
-      if (password.length < 8) {
+      if (password.length < 😎 {
         showPopup('Password must be at least 8 characters long');
         return false;
       }

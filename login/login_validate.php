@@ -10,10 +10,39 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
+    // Store form data in session
+    $_SESSION['form_data'] = [
+        'email' => $_POST['email'],
+        'password' => $_POST['password']
+    ];
+
+    // Verify reCAPTCHA first
+    if (!isset($_POST['g-recaptcha-response']) || empty($_POST['g-recaptcha-response'])) {
+        $_SESSION['error'] = "Please check the reCAPTCHA box.";
+        header("Location: login.php");
+        exit();
+    }
+
+    // Verify the reCAPTCHA response with Google
+    $recaptcha_secret = $_ENV['RECAPTCHA_SECRET_KEY'];
+    $recaptcha_response = $_POST['g-recaptcha-response'];
+    
+    $verify_response = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.$recaptcha_secret.'&response='.$recaptcha_response);
+    $response_data = json_decode($verify_response);
+    
+    if (!$response_data->success) {
+        $_SESSION['error'] = "reCAPTCHA verification failed. Please try again.";
+        header("Location: login.php");
+        exit();
+    }
+
     $input = trim($_POST['email']); // This could be email or username
     $password = $_POST['password'];
 
     try {
+        // Clear form data from session since validation passed
+        unset($_SESSION['form_data']);
+        
         // Check if input is email or username
         $isEmail = filter_var($input, FILTER_VALIDATE_EMAIL);
         

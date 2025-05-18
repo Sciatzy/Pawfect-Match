@@ -134,6 +134,10 @@ $pending_adoptions = $pdo->query($query)->fetchAll();
             justify-content: space-between;
             align-items: center;
             margin-bottom: 40px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .welcome {

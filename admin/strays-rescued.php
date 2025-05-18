@@ -397,6 +397,7 @@ $rescued_strays = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <span class="detail-label">Rescued Date</span>
                                     <span class="detail-value"><i class="fas fa-calendar-check"></i> <?php echo date('F d, Y', strtotime($stray['rescued_date'])); ?></span>
                                 </div>
+                                
                             </div>
                         </div>
                         <?php if (!empty($stray['rescuer_firstname'])): ?>

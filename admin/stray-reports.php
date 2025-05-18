@@ -38,7 +38,16 @@ $strays = $pdo->query("SELECT * FROM strays WHERE rescued_date IS NULL ORDER BY 
         .logout:hover { color: #ee7721; }
         .logout-icon { margin-right: 15px; }
         .main-content { margin-left: 320px; padding: 40px; min-height: 100vh; width: calc(100% - 320px); box-sizing: border-box; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
         .welcome { font-size: 36px; font-weight: bold; color: #333; }
         .user-info { display: flex; align-items: center; gap: 10px; background: #fff2ea; padding: 8px 15px; border-radius: 20px; }
         .user-name { font-weight: 500; color: #333; }
