@@ -1,5 +1,3 @@
-
-cinnamon🐰
 <?php
   session_start();
 
