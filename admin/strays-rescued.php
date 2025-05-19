@@ -320,13 +320,13 @@ $rescued_strays = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <a href="pending-adoptions.php" class="menu-item"><i class="fas fa-clipboard-list menu-icon"></i>Pending Adoptions</a>
     <a href="stray-reports.php" class="menu-item"><i class="fas fa-exclamation-triangle menu-icon"></i>Stray Reports</a>
     <a href="strays-rescued.php" class="menu-item active"><i class="fas fa-check-square menu-icon"></i>Rescued Strays</a>
-    <a href="../login/logout.php" class="logout"><i class="fas fa-sign-out-alt logout-icon"></i>Logout</a>
+    <a href="logout.php" class="logout"><i class="fas fa-sign-out-alt logout-icon"></i>Logout</a>
 </div>
 <div class="main-content">
     <div class="header">
         <div class="welcome">Pet Management</div>
         <div style="display: flex; align-items: center; gap: 15px;">
-            <a href="../index.php" class="back-home">
+            <a href="../login/index.php" class="back-home">
                 <i class="fas fa-home"></i>
                 Back to Home
             </a>
@@ -354,7 +354,7 @@ $rescued_strays = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php foreach ($rescued_strays as $stray): ?>
                 <div class="adoption-card">
                     <div class="pet-image-container" style="position:relative;">
-                        <img src="/draft/userreport/uploads/<?php echo htmlspecialchars(basename($stray['image_path'])); ?>" class="pet-image" alt="Stray Image" onerror="this.onerror=null;this.src='/draft/images/default-stray.png';">
+                        <img src="../userreport/uploads/<?php echo htmlspecialchars(basename($stray['image_path'])); ?>" class="pet-image" alt="Stray Image" onerror="this.onerror=null;this.src='../images/logo.png';">
                         <div class="pet-status" style="position:absolute;top:10px;left:10px;background:rgba(76,175,80,0.9);color:white;padding:5px 10px;border-radius:5px;font-size:0.8rem;">Rescued</div>
                     </div>
                     <div class="adoption-details">

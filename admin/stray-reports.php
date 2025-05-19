@@ -37,7 +37,13 @@ $strays = $pdo->query("SELECT * FROM strays WHERE rescued_date IS NULL ORDER BY 
         .logout { margin-top: auto; display: flex; align-items: center; padding: 15px 20px; color: #333; cursor: pointer; font-weight: 500; text-decoration: none; }
         .logout:hover { color: #ee7721; }
         .logout-icon { margin-right: 15px; }
-        .main-content { margin-left: 320px; padding: 40px; min-height: 100vh; width: calc(100% - 320px); box-sizing: border-box; }
+        .main-content { 
+            margin-left: 320px;
+             padding: 40px; min-height: 100vh;
+              width: calc(100% - 320px);
+               box-sizing: border-box;
+             }
+            
         .header {
             display: flex;
             justify-content: space-between;
@@ -101,13 +107,13 @@ $strays = $pdo->query("SELECT * FROM strays WHERE rescued_date IS NULL ORDER BY 
         <a href="pending-adoptions.php" class="menu-item"><i class="fas fa-clipboard-list menu-icon"></i>Pending Adoptions</a>
         <a href="stray-reports.php" class="menu-item active"><i class="fas fa-exclamation-triangle menu-icon"></i>Stray Reports</a>
         <a href="strays-rescued.php" class="menu-item"><i class="fas fa-check-square menu-icon"></i>Rescued Strays</a>
-        <a href="../login/logout.php" class="logout"><i class="fas fa-sign-out-alt logout-icon"></i>Logout</a>
+        <a href="logout.php" class="logout"><i class="fas fa-sign-out-alt logout-icon"></i>Logout</a>
     </div>
     <div class="main-content">
         <div class="header">
             <div class="welcome">Stray Reports</div>
             <div style="display: flex; align-items: center; gap: 15px;">
-                <a href="../index.php" class="back-home">
+                <a href="../login/index.php" class="back-home">
                     <i class="fas fa-home"></i>
                     Back to Home
                 </a>

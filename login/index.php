@@ -171,7 +171,6 @@ $user = $stmt->fetch();
             <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="../adopt/pet-list.php">Adopt</a></li>
             <li class="nav-item"><a class="nav-link" href="../userreport/stray-reports.php">Stray Reports</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">About</a></li>
           </ul>
           <?php if(!isset($_COOKIE['token'])): ?>
           <div class="auth-buttons">

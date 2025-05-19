@@ -210,29 +210,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             background-color: #ffe6e6;
         }
         
-        .generate-report-btn {
-            background-color: #ff914d;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 30px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background-color 0.3s;
-            text-decoration: none;
-        }
-        
-        .generate-report-btn:hover {
-            background-color: #e67e3d;
-        }
-        
-        .generate-report-btn i {
-            font-size: 20px;
-        }
+       
         
         .report-section {
             margin-bottom: 40px;
@@ -293,7 +271,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <a href="stray-reports.php" class="menu-item<?= $current_page == 'stray-reports.php' ? ' active' : '' ?>"><i class="fas fa-exclamation-triangle menu-icon"></i>Stray Reports</a>
         <a href="strays-rescued.php" class="menu-item<?= $current_page == 'strays-rescued.php' ? ' active' : '' ?>"><i class="fas fa-check-square menu-icon"></i>Rescued Strays</a>
         
-        <a href="../login/logout.php" class="logout"><i class="fas fa-sign-out-alt logout-icon"></i>Logout</a>
+        <a href="logout.php" class="logout"><i class="fas fa-sign-out-alt logout-icon"></i>Logout</a>
     </div>
     
     <div class="main-content">
@@ -332,13 +310,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <div class="stat-title">Rescued Strays</div>
                 <div class="stat-value"><?php echo $rescuedStrays; ?></div>
             </div>
-        </div>
-        
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 40px;">
-            <a href="generate-report.php" class="generate-report-btn" style="width: auto; min-width: 200px; text-align: center; padding: 12px 30px; display: inline-flex; align-items: center; justify-content: center; gap: 10px;">
-                <i class="fas fa-file-pdf"></i>
-                Generate Report
-            </a>
         </div>
         
         <div class="report-section">

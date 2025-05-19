@@ -341,15 +341,21 @@ $adopted_pets = $pdo->query($query)->fetchAll();
         <a href="stray-reports.php" class="menu-item"><i class="fas fa-exclamation-triangle menu-icon"></i>Stray Reports</a>
         <a href="strays-rescued.php" class="menu-item"><i class="fas fa-check-square menu-icon"></i>Rescued Strays</a>
         
-        <a href="../login/logout.php" class="logout"><i class="fas fa-sign-out-alt logout-icon"></i>Logout</a>
+        <a href="logout.php" class="logout"><i class="fas fa-sign-out-alt logout-icon"></i>Logout</a>
     </div>
     
     <div class="main-content">
         <div class="adoption-list">
             <div class="adoption-header">
                 <h2>Adopted Pets</h2>
-                <div class="adoption-count">
-                    <?= count($adopted_pets) ?> Adopted
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <a href="generate-report.php" class="generate-report-btn" style="display: inline-flex; align-items: center; gap: 8px; background: #ff914d; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: 500;">
+                        <i class="fas fa-file-pdf"></i>
+                        Generate Report
+                    </a>
+                    <div class="adoption-count">
+                        <?= count($adopted_pets) ?> Adopted
+                    </div>
                 </div>
             </div>
             

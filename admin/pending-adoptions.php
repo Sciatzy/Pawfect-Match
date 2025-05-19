@@ -404,18 +404,18 @@ $pending_adoptions = $pdo->query($query)->fetchAll();
         <a href="dashboard.php" class="menu-item"><i class="fas fa-user menu-icon"></i>Dashboard</a>
         <a href="pet-list.php" class="menu-item"><i class="fas fa-dog menu-icon"></i>Pets Listed</a>
         <a href="adopted-pets.php" class="menu-item"><i class="fas fa-home menu-icon"></i>Adopted Pets</a>
-        <a href="pending-adoptions.php" class="menu-item"><i class="fas fa-clipboard-list menu-icon"></i>Pending Adoptions</a>
+        <a href="pending-adoptions.php" class="menu-item active"><i class="fas fa-clipboard-list menu-icon"></i>Pending Adoptions</a>
         <a href="stray-reports.php" class="menu-item"><i class="fas fa-exclamation-triangle menu-icon"></i>Stray Reports</a>
         <a href="strays-rescued.php" class="menu-item"><i class="fas fa-check-square menu-icon"></i>Rescued Strays</a>
         
-        <a href="../login/logout.php" class="logout"><i class="fas fa-sign-out-alt logout-icon"></i>Logout</a>
+        <a href="logout.php" class="logout"><i class="fas fa-sign-out-alt logout-icon"></i>Logout</a>
     </div>
     
     <div class="main-content">
         <div class="header">
             <div class="welcome">Welcome Back!</div>
             <div style="display: flex; align-items: center; gap: 15px;">
-                <a href="../index.php" class="back-home">
+                <a href="../login/index.php" class="back-home">
                     <i class="fas fa-home"></i>
                     Back to Home
                 </a>

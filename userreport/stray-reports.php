@@ -336,7 +336,6 @@ $strays = $pdo->query("SELECT * FROM strays WHERE rescued_date IS NULL ORDER BY 
                         <li class="nav-item"><a class="nav-link" href="../login/index.php">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="../adopt/pet-list.php">Adopt</a></li>
                         <li class="nav-item"><a class="nav-link active" href="stray-reports.php">Stray Reports</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">About</a></li>
                     </ul>
                     <?php if(!isset($_COOKIE['token'])): ?>
                     <div class="auth-buttons">

@@ -3,89 +3,221 @@ session_start();
 require_once '../includes/db.php';
 require_once '../vendor/autoload.php';
 
-// Get all rescued strays with reporter and rescuer info
-$stmt = $pdo->prepare("
-    SELECT s.*, 
-           u.firstname AS reporter_firstname, u.lastname AS reporter_lastname, u.email AS reporter_email,
-           r.firstname AS rescuer_firstname, r.lastname AS rescuer_lastname, r.email AS rescuer_email
-    FROM strays s
-    LEFT JOIN users u ON s.reporter_id = u.ID
-    LEFT JOIN users r ON s.rescued_by = r.ID
-    WHERE s.rescued_date IS NOT NULL
-    ORDER BY s.rescued_date DESC
-");
-$stmt->execute();
-$rescued_strays = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', 'C:/xampp/apache/logs/error.log');
 
-// Create PDF
-$mpdf = new \Mpdf\Mpdf([
-    'margin_left' => 20,
-    'margin_right' => 20,
-    'margin_top' => 20,
-    'margin_bottom' => 20,
-]);
+try {
+    error_log("Starting Adopted Pets PDF generation process");
+    
+    // Get adopted pets data
+    $query = "
+    SELECT 
+        ad.adoption_id,
+        ad.adoption_date,
+        a.adopter_id,
+        a.housing_type,
+        a.yard_size,
+        a.pet_experience,
+        a.hours_alone,
+        a.comments,
+        p.name as pet_name,
+        p.gender,
+        p.age,
+        p.weight,
+        u.firstname,
+        u.lastname,
+        u.email,
+        a.phone,
+        a.address
+    FROM adoptions ad
+    INNER JOIN adopters a ON ad.adopter_id = a.adopter_id
+    INNER JOIN pets p ON ad.pet_id = p.pets_id
+    INNER JOIN users u ON a.user_id = u.ID
+    WHERE ad.app_status = 'approved'
+    ORDER BY ad.adoption_date DESC";
+    
+    $adopted_pets = $pdo->query($query)->fetchAll();
+    error_log("Found " . count($adopted_pets) . " adopted pets");
 
-// Add logo and title
-$mpdf->Image('../images/logo.png', 10, 10, 50);
-$mpdf->SetFont('Arial', 'B', 24);
-$mpdf->Cell(0, 20, 'Rescued Strays Report', 0, 1, 'C');
-$mpdf->Ln(10);
-
-// Add summary
-$mpdf->SetFont('Arial', 'B', 14);
-$mpdf->Cell(0, 10, 'Summary', 0, 1);
-$mpdf->SetFont('Arial', '', 12);
-$mpdf->Cell(0, 10, 'Total Rescued Strays: ' . count($rescued_strays), 0, 1);
-$mpdf->Cell(0, 10, 'Report Generated: ' . date('F d, Y'), 0, 1);
-$mpdf->Ln(10);
-
-// Add rescued strays details
-$mpdf->SetFont('Arial', 'B', 14);
-$mpdf->Cell(0, 10, 'Rescued Strays Details', 0, 1);
-$mpdf->Ln(5);
-
-foreach ($rescued_strays as $stray) {
-    $mpdf->SetFont('Arial', 'B', 12);
-    $mpdf->Cell(0, 10, 'Stray ID: ' . $stray['ID'], 0, 1);
+    // Initialize mPDF with custom settings
+    $mpdf = new \Mpdf\Mpdf([
+        'margin_top' => 35,
+        'margin_header' => 10
+    ]);
     
-    $mpdf->SetFont('Arial', '', 11);
-    $mpdf->Cell(40, 8, 'Name:', 0);
-    $mpdf->Cell(0, 8, $stray['name'], 0, 1);
+    // Define the header with the logo
+    $logoPath = '../assets/images/logo.png'; // Update with your actual logo path
     
-    $mpdf->Cell(40, 8, 'Type:', 0);
-    $mpdf->Cell(0, 8, $stray['animal_type'], 0, 1);
+    // Set header template with logo
+    $mpdf->SetHTMLHeader('
+        <div style="text-align: center; border-bottom: 1px solid #4a4a4a; padding-bottom: 10px; margin-bottom: 10px;">
+            <table width="100%">
+                <tr>
+                    <td width="20%" style="text-align: left;">
+                        <img src="' . $logoPath . '" width="70" alt="Pet Adoption Logo">
+                    </td>
+                    <td width="60%" style="text-align: center; font-size: 20px; font-weight: bold; color: #444;">
+                        Adopted Pets Report
+                    </td>
+                    <td width="20%" style="text-align: right; font-style: italic; font-size: 12px;">
+                        Generated: ' . date('F d, Y') . '
+                    </td>
+                </tr>
+            </table>
+        </div>
+    ');
     
-    $mpdf->Cell(40, 8, 'Gender:', 0);
-    $mpdf->Cell(0, 8, ucfirst($stray['gender']), 0, 1);
+    // Set footer
+    $mpdf->SetHTMLFooter('
+        <table width="100%">
+            <tr>
+                <td width="33%" style="font-size: 12px;">{DATE j-m-Y}</td>
+                <td width="33%" align="center" style="font-size: 12px;">Page {PAGENO} of {nbpg}</td>
+                <td width="33%" style="text-align: right; font-size: 12px;">Pet Adoption Center</td>
+            </tr>
+        </table>
+    ');
     
-    $mpdf->Cell(40, 8, 'Location:', 0);
-    $mpdf->Cell(0, 8, $stray['location'], 0, 1);
+    // Introduction content
+    $html = '
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+            color: #333;
+        }
+        .adoption-record {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4CAF50;
+        }
+        .pet-info {
+            background-color: #edf7ed;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .adopter-info {
+            background-color: #e8f0fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .adoption-details {
+            background-color: #fff9e6;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        h2, h3 {
+            color: #4a4a4a;
+        }
+        h4 {
+            margin-bottom: 5px;
+            color: #2e7d32;
+        }
+        .summary {
+            background-color: #e8f5e9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
     
-    $mpdf->Cell(40, 8, 'Rescued Date:', 0);
-    $mpdf->Cell(0, 8, date('F d, Y', strtotime($stray['rescued_date'])), 0, 1);
+    <div class="summary">
+        <h2>Adoption Summary</h2>
+        <p>Total Adoptions: <strong>' . count($adopted_pets) . '</strong></p>
+        <p>This report lists all approved pet adoptions from our system, including details about the pets and their new owners.</p>
+    </div>
+    ';
     
-    $mpdf->Cell(40, 8, 'Reporter:', 0);
-    $mpdf->Cell(0, 8, $stray['reporter_firstname'] . ' ' . $stray['reporter_lastname'], 0, 1);
-    
-    if (!empty($stray['rescuer_firstname'])) {
-        $mpdf->Cell(40, 8, 'Rescuer:', 0);
-        $mpdf->Cell(0, 8, $stray['rescuer_firstname'] . ' ' . $stray['rescuer_lastname'], 0, 1);
+    // Add each adoption record
+    foreach ($adopted_pets as $pet) {
+        $html .= '
+        <div class="adoption-record">
+            <h3>Adoption #' . $pet['adoption_id'] . '</h3>
+            
+            <div class="pet-info">
+                <h4>🐾 Pet Information</h4>
+                <table width="100%">
+                    <tr>
+                        <td width="25%"><strong>Name:</strong></td>
+                        <td>' . htmlspecialchars($pet['pet_name']) . '</td>
+                        <td width="25%"><strong>Gender:</strong></td>
+                        <td>' . htmlspecialchars($pet['gender']) . '</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Age:</strong></td>
+                        <td>' . htmlspecialchars($pet['age']) . ' years</td>
+                        <td><strong>Weight:</strong></td>
+                        <td>' . htmlspecialchars($pet['weight']) . ' kg</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="adopter-info">
+                <h4>👤 Adopter Information</h4>
+                <table width="100%">
+                    <tr>
+                        <td width="25%"><strong>Name:</strong></td>
+                        <td colspan="3">' . htmlspecialchars($pet['firstname'] . ' ' . $pet['lastname']) . '</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Email:</strong></td>
+                        <td>' . htmlspecialchars($pet['email']) . '</td>
+                        <td width="25%"><strong>Phone:</strong></td>
+                        <td>' . htmlspecialchars($pet['phone']) . '</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Address:</strong></td>
+                        <td colspan="3">' . htmlspecialchars($pet['address']) . '</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="adoption-details">
+                <h4>📋 Adoption Details</h4>
+                <table width="100%">
+                    <tr>
+                        <td width="25%"><strong>Date:</strong></td>
+                        <td>' . date('F d, Y', strtotime($pet['adoption_date'])) . '</td>
+                        <td width="25%"><strong>Housing Type:</strong></td>
+                        <td>' . htmlspecialchars($pet['housing_type']) . '</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Yard Size:</strong></td>
+                        <td>' . htmlspecialchars($pet['yard_size']) . '</td>
+                        <td><strong>Hours Alone:</strong></td>
+                        <td>' . htmlspecialchars($pet['hours_alone']) . '</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pet Experience:</strong></td>
+                        <td colspan="3">' . htmlspecialchars($pet['pet_experience']) . '</td>
+                    </tr>
+                </table>
+                <p><strong>Comments:</strong> ' . htmlspecialchars($pet['comments']) . '</p>
+            </div>
+        </div>
+        ';
     }
+
+    // Write HTML to the PDF
+    $mpdf->WriteHTML($html);
+
+    // Output PDF
+    $mpdf->Output('Adopted_Pets_Report.pdf', 'D');
+    error_log("PDF generated and sent to browser successfully");
+
+} catch (Exception $e) {
+    error_log("PDF Generation Error: " . $e->getMessage());
+    error_log("Error File: " . $e->getFile());
+    error_log("Error Line: " . $e->getLine());
+    error_log("Stack Trace: " . $e->getTraceAsString());
     
-    $mpdf->Ln(5);
-    $mpdf->MultiCell(0, 8, 'Description: ' . $stray['description'], 0);
-    $mpdf->Ln(10);
-    
-    // Add a separator line between entries
-    $mpdf->Line(20, $mpdf->y, 190, $mpdf->y);
-    $mpdf->Ln(10);
+    echo 'Error generating PDF: ' . $e->getMessage();
 }
-
-// Add footer
-$mpdf->SetY(-15);
-$mpdf->SetFont('Arial', 'I', 8);
-$mpdf->Cell(0, 10, 'Page ' . $mpdf->PageNo() . ' of {nb}', 0, 0, 'C');
-
-// Output PDF
-$mpdf->Output('Rescued_Strays_Report.pdf', 'D');
 ?>

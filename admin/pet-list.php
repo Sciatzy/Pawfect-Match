@@ -393,7 +393,7 @@ $pets = $pdo->query("SELECT * FROM pets WHERE status != 'adopted' ORDER BY creat
         <a href="stray-reports.php" class="menu-item"><i class="fas fa-exclamation-triangle menu-icon"></i>Stray Reports</a>
         <a href="strays-rescued.php" class="menu-item"><i class="fas fa-check-square menu-icon"></i>Rescued Strays</a>
         
-        <a href="../login/logout.php" class="logout"><i class="fas fa-sign-out-alt logout-icon"></i>Logout</a>
+        <a href="logout.php" class="logout"><i class="fas fa-sign-out-alt logout-icon"></i>Logout</a>
     </div>
     
     <div class="main-content">
@@ -404,7 +404,7 @@ $pets = $pdo->query("SELECT * FROM pets WHERE status != 'adopted' ORDER BY creat
                     <i class="fas fa-plus"></i>
                     Add New Pet
                 </a>
-                <a href="../index.php" class="back-home">
+                <a href="login/index.php" class="back-home">
                     <i class="fas fa-home"></i>
                     Back to Home
                 </a>

@@ -33,8 +33,8 @@ try {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['report_id'])) {
     $report_id = $_POST['report_id'];
     try {
-        $stmt = $pdo->prepare("UPDATE strays SET rescued_date = NOW(), rescued_by = ? WHERE stray_id = ?");
-        $stmt->execute([$user_id, $report_id]);
+        $stmt = $pdo->prepare("UPDATE strays SET status = 'rescued', rescued_date = NOW(), rescued_by = ? WHERE stray_id = ?");      
+         $stmt->execute([$user_id, $report_id]);
         $_SESSION['success'] = "Stray has been marked as rescued successfully.";
     } catch (PDOException $e) {
         error_log("Error marking stray as rescued: " . $e->getMessage());
